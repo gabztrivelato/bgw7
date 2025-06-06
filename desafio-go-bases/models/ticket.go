@@ -8,7 +8,3 @@ type Ticket struct {
 	FlightHour  string
 	Price       int
 }
-
-type Tickets struct {
-	Tickets []Ticket
-}
