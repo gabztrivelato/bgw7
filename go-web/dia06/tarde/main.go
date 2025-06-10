@@ -40,7 +40,7 @@ func main() {
 
 	router.Get("/products", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Header().Add("Content-Type", "appliation/json")
+		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(products)
 	})
 
@@ -54,7 +54,7 @@ func main() {
 
 			if product.Id == id {
 				w.WriteHeader(http.StatusOK)
-				w.Header().Add("Content-Type", "appliation/json")
+				w.Header().Add("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(product)
 			}
 		}
@@ -81,7 +81,7 @@ func main() {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Header().Add("Content-Type", "appliation/json")
+		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(filteredProducts)
 	})
 
