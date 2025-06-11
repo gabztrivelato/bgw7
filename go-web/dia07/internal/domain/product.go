@@ -15,26 +15,29 @@ type Product struct {
 	Price       float64 `json:"price"`
 }
 
-type CreateProductRequest struct {
+type ProductRequest struct {
 	Name        string  `json:"name"`
 	Quantity    int     `json:"quantity"`
 	Code        string  `json:"code_value"`
 	IsPublished bool    `json:"is_published"`
 	Expiration  string  `json:"expiration"`
 	Price       float64 `json:"price"`
+}
+
+type PatchProductRequest struct {
+	Name        string   `json:"name"`
+	Quantity    *int     `json:"quantity"`
+	Code        string   `json:"code_value"`
+	IsPublished *bool    `json:"is_published"`
+	Expiration  string   `json:"expiration"`
+	Price       *float64 `json:"price"`
 }
 
 type CreateProductResponse struct {
-	Id          int     `json:"id"`
-	Name        string  `json:"name"`
-	Quantity    int     `json:"quantity"`
-	Code        string  `json:"code_value"`
-	IsPublished bool    `json:"is_published"`
-	Expiration  string  `json:"expiration"`
-	Price       float64 `json:"price"`
+	Id int `json:"id"`
 }
 
-func (product *CreateProductRequest) ToDomain() Product {
+func (product *ProductRequest) ToDomain() Product {
 	return Product{
 		Name:        product.Name,
 		Quantity:    product.Quantity,
@@ -45,7 +48,7 @@ func (product *CreateProductRequest) ToDomain() Product {
 	}
 }
 
-func (product *CreateProductRequest) Validate() error {
+func (product *ProductRequest) Validate() error {
 	if product.Name == "" {
 		return errors.New("name must have a value")
 	}
