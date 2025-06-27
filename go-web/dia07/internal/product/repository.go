@@ -22,9 +22,9 @@ type Repository interface {
 	PartialUpdate(id int, product domain.PatchProductRequest) error
 }
 
-func NewRepository() Repository {
+func NewRepository(db map[int]domain.Product) Repository {
 	return &repository{
-		storage: make(map[int]domain.Product),
+		storage: db,
 	}
 }
 

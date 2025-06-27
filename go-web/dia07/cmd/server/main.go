@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gabztrivelato/bgw7/dia07/cmd/server/controllers"
+	"github.com/gabztrivelato/bgw7/dia07/internal/domain"
 	"github.com/gabztrivelato/bgw7/dia07/internal/product"
 	"github.com/go-chi/chi/v5"
 )
@@ -12,7 +13,8 @@ import (
 func main() {
 	r := chi.NewRouter()
 
-	repository := product.NewRepository()
+	db := make(map[int]domain.Product)
+	repository := product.NewRepository(db)
 	repository.LoadData()
 	controller := controllers.NewProductController(repository)
 
