@@ -15,11 +15,11 @@ func main() {
 	// - config
 	cfg := &application.ConfigApplicationDefault{
 		Db: &mysql.Config{
-			User:                 "root",
-			Passwd:               "",
-			Net:                  "tcp",
-			Addr:                 "localhost:3306",
-			DBName:               "fantasy_products",
+			User:   "myuser",
+			Passwd: "Bootcamp!",
+			Net:    "tcp",
+			Addr:   "localhost:3306",
+			DBName: "fantasy_products",
 		},
 		Addr: "127.0.0.1:8080",
 	}
@@ -30,10 +30,18 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+
+	err = app.InsertData()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// - run
 	err = app.Run()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
 }

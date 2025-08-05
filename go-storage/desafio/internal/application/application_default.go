@@ -5,7 +5,10 @@ import (
 	"app/internal/repository"
 	"app/internal/service"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -24,7 +27,7 @@ type ConfigApplicationDefault struct {
 func NewApplicationDefault(config *ConfigApplicationDefault) *ApplicationDefault {
 	// default values
 	defaultCfg := &ConfigApplicationDefault{
-		Db:      nil,
+		Db:   nil,
 		Addr: ":8080",
 	}
 	if config != nil {
@@ -37,7 +40,7 @@ func NewApplicationDefault(config *ConfigApplicationDefault) *ApplicationDefault
 	}
 
 	return &ApplicationDefault{
-		cfgDb:      defaultCfg.Db,
+		cfgDb:   defaultCfg.Db,
 		cfgAddr: defaultCfg.Addr,
 	}
 }
@@ -124,4 +127,74 @@ func (a *ApplicationDefault) Run() (err error) {
 
 	err = http.ListenAndServe(a.cfgAddr, a.router)
 	return
+}
+
+// Insert Data
+func (a *ApplicationDefault) InsertData() (err error) {
+	customersData, err := os.ReadFile("docs/db/json/customers.json")
+	if err != nil {
+		return fmt.Errorf("failed to read customers data: %w", err)
+	}
+
+	var customers []handler.CustomerJSON
+	if err := json.Unmarshal(customersData, &customers); err != nil {
+		return fmt.Errorf("failed to unmarshal customers data: %w", err)
+	}
+
+	productsData, err := os.ReadFile("docs/db/json/products.json")
+	if err != nil {
+		return fmt.Errorf("failed to read products data: %w", err)
+	}
+	var products []handler.ProductJSON
+	if err := json.Unmarshal(productsData, &products); err != nil {
+		return fmt.Errorf("failed to unmarshal products data: %w", err)
+	}
+
+	invoicesData, err := os.ReadFile("docs/db/json/invoices.json")
+	if err != nil {
+		return fmt.Errorf("failed to read invoices data: %w", err)
+	}
+
+	var invoices []handler.InvoiceJSON
+	if err := json.Unmarshal(invoicesData, &invoices); err != nil {
+		return fmt.Errorf("failed to unmarshal invoices data: %w", err)
+	}
+
+	salesData, err := os.ReadFile("docs/db/json/sales.json")
+	if err != nil {
+		return fmt.Errorf("failed to read sales data: %w", err)
+	}
+
+	var sales []handler.SaleJSON
+	if err := json.Unmarshal(salesData, &sales); err != nil {
+		return fmt.Errorf("failed to unmarshal sales data: %w", err)
+	}
+	for _, c := range customers {
+		_, err = a.db.Exec("INSERT INTO customers (id, first_name, last_name, `condition`) VALUES (?, ?, ?, ?)", c.Id, c.FirstName, c.LastName, c.Condition)
+		if err != nil {
+			return fmt.Errorf("failed to insert customers data: %w", err)
+		}
+	}
+
+	for _, i := range invoices {
+		_, err = a.db.Exec("INSERT INTO invoices (id, customer_id, total) VALUES (?, ?, ?)", i.Id, i.CustomerId, i.Total)
+		if err != nil {
+			return fmt.Errorf("failed to insert invoices data: %w", err)
+		}
+	}
+
+	for _, p := range products {
+		_, err = a.db.Exec("INSERT INTO products (id, description, price) VALUES (?, ?, ?)", p.Id, p.Description, p.Price)
+		if err != nil {
+			return fmt.Errorf("failed to insert products data: %w", err)
+		}
+	}
+	for _, s := range sales {
+		_, err = a.db.Exec("INSERT INTO sales (id, invoice_id, product_id, quantity) VALUES (?, ?, ?, ?)", s.Id, s.InvoiceId, s.ProductId, s.Quantity)
+		if err != nil {
+			return fmt.Errorf("failed to insert sales data: %w", err)
+		}
+	}
+
+	return nil
 }
